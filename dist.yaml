@@ -1,0 +1,19 @@
+# This file contains values that are likely to change per distribution.
+# The aim is to make it easier to update / extend the charms with
+# minimal changes to the shared code in the jujubigdata library.
+hadoop_version: '2.4.1'
+groups:
+    - 'hadoop'
+users:
+    gobblin:
+        groups: ['hadoop']
+dirs:
+    hadoop:
+        path: '/usr/lib/hadoop'
+        perms: 0777
+    gobblin:
+        path: '/usr/lib/gobblin'
+        owner: 'gobblin'
+        group: 'hadoop'
+    gobblin_conf:
+        path: '/etc/gobblin/conf'

@@ -1,0 +1,13 @@
+options:
+  output_dir: /home/ubuntu/resources
+resources:
+  pathlib:
+    pypi: path.py>=7.0
+  jujubigdata:
+    pypi: git+https://github.com/ktsakalozos/jujubigdata.git#egg=jujubigdata
+    skip_hash: true
+optional_resources:
+  gobblin-x86_64:
+    url: https://s3.amazonaws.com/jujubigdata/linkedin/x86_64/gobblin-dist-0.5.0_hadoop-2.4.1-e1347e2.tar.gz
+    hash: e1347e2a26de91e37a7f51000d34d16875378ab21dba0f10cdd03507d7141677
+    hash_type: sha256
