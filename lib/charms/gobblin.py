@@ -47,6 +47,18 @@ class Gobblin(object):
         
         # TODO(ktsakalozos): use a regex or something similar.
         utils.re_edit_in_place(gobblin_config, {
-                r'fs.uri=hdfs://localhost:8020': 'fs.uri=hdfs://%s' % hdfs_endpoint,
+                r'fs.uri=hdfs://localhost:8020': 'fs.uri=%s' % hdfs_endpoint,                
                 })
+
+        self.__repair_gobblin_exec()
+
+    def __repair_gobblin_exec(self):
+        # 1. Ubuntu uses dash and not bash for sh https://wiki.ubuntu.com/DashAsBinSh
+        # 2. Gobblin 0.5.0 comes with guava 15.0 not 18.0
+        gobblin_exec = ''.join((self.dist_config.path('gobblin'), '/bin/gobblin-mapreduce.sh'))
+        utils.re_edit_in_place(gobblin_exec, {
+                r'#!/bin/sh': '#!/bin/bash',
+                r'guava-18.0.jar': 'guava-15.0.jar',
+                })
+        
 

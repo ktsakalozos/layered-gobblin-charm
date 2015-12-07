@@ -6,8 +6,8 @@ def dist_config():
     from jujubigdata.utils import DistConfig  # no available until after bootstrap
 
     if not getattr(dist_config, 'value', None):
-        hive_reqs = ['hadoop_version', 'groups', 'users', 'dirs']
-        dist_config.value = DistConfig(filename='dist.yaml', required_keys=hive_reqs)
+        gobblin_reqs = ['hadoop_version', 'groups', 'users', 'dirs']
+        dist_config.value = DistConfig(filename='dist.yaml', required_keys=gobblin_reqs)
     return dist_config.value
 
 @when('bootstrapped')
