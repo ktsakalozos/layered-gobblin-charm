@@ -31,43 +31,22 @@ unit that communicates with the cluster by relating to the
 ## Testing the deployment
 
 ### Smoke test Gobblin
-From the Gobblin unit, start the Demo ingestion job as the `gobblin` user:
+From the Gobblin unit, start the wikipedia ingestion demo job as the `gobblin` user:
 
     juju ssh gobblin/0
+    sudo su gobblin -c "gobblin-mapreduce.sh --conf wikipedia.pull --jars /usr/lib/gobblin/lib/gobblin-example.jar"
 
-TODO: Edit from here on
-    sudo su gobblin -c .....
+The output will be in hdfs under /gobblin/work/job-output/gobblin/example/wikipedia/WikipediaOutput/<Your_Job_Id>
 
-From the Hive console, verify sample commands execute successfully:
+List and get the job output file in avro format.
 
-    show databases;
-    create table test(col1 int, col2 string);
-    show tables;
-    quit;
+    hdfs dfs -ls /gobblin/work/job-output/gobblin/example/wikipedia/WikipediaOutput/<Your_Job_Id>
+    hdfs dfs -get /gobblin/work/job-output/gobblin/example/wikipedia/WikipediaOutput/<Your_Job_Id>/<Output.avro>
 
-Exit from the Hive unit:
+Transform to JSON.
 
-    exit
-
-### Smoke test HiveServer2
-From the Hive unit, start the Beeline console as the `hive` user:
-
-    juju ssh hive/0
-    sudo su hive -c beeline
-
-From the Beeline console, connect to HiveServer2 and verify sample commands
-execute successfully:
-
-    !connect jdbc:hive2://localhost:10000 hive password org.apache.hive.jdbc.HiveDriver
-    show databases;
-    create table test2(a int, b string);
-    show tables;
-    !quit
-
-Exit from the Hive unit:
-
-    exit
-
+    curl -O http://central.maven.org/maven2/org/apache/avro/avro-tools/1.7.7/avro-tools-1.7.7.jar
+    java -jar avro-tools-1.7.7.jar tojson --pretty <Output.avro> > output.json
 
 ## Contact Information
 
