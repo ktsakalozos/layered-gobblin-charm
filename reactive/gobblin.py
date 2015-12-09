@@ -10,6 +10,7 @@ def dist_config():
         dist_config.value = DistConfig(filename='dist.yaml', required_keys=gobblin_reqs)
     return dist_config.value
 
+
 @when('bootstrapped')
 @when_not('gobblin.installed')
 def install_gobblin(*args):
@@ -21,10 +22,12 @@ def install_gobblin(*args):
         gobblin.install()
         set_state('gobblin.installed')
 
+
 @when('bootstrapped')
 @when_not('hadoop.connected')
 def missing_hadoop():
     hookenv.status_set('blocked', 'Waiting for relation to Hadoop')
+
 
 @when('bootstrapped', 'hadoop.connected')
 @when_not('hadoop.ready')

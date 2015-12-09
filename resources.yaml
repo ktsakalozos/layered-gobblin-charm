@@ -8,6 +8,6 @@ resources:
     skip_hash: true
 optional_resources:
   gobblin-x86_64:
-    url: https://s3.amazonaws.com/jujubigdata/linkedin/x86_64/gobblin-dist-0.5.0_hadoop-2.4.1-e1347e2.tar.gz
-    hash: e1347e2a26de91e37a7f51000d34d16875378ab21dba0f10cdd03507d7141677
+    url: https://s3.amazonaws.com/jujubigdata/linkedin/x86_64/gobblin-dist-0.5.0_hadoop-2.4.1-0f9fd67.tar.gz
+    hash: 0f9fd67a8a0564c5dd9239c60c40f6adf2b53d55563df8b026d9bbd74be617ae
     hash_type: sha256

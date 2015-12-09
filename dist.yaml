@@ -15,5 +15,7 @@ dirs:
         path: '/usr/lib/gobblin'
         owner: 'gobblin'
         group: 'hadoop'
-    gobblin_conf:
-        path: '/etc/gobblin/conf'
+    outputdir:
+        path: '/gobblin/work'
+
+

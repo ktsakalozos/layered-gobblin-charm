@@ -3,6 +3,7 @@ import jujuresources
 from path import Path
 from jujubigdata import utils
 from charmhelpers.core import unitdata
+from shutil import copy
 
 # Main Gobblin class for callbacks
 class Gobblin(object):
@@ -36,29 +37,18 @@ class Gobblin(object):
             if gobblin_bin not in env['PATH']:
                 env['PATH'] = ':'.join([env['PATH'], gobblin_bin])
             env['HADOOP_BIN_DIR'] = env['HADOOP_HOME'] + '/bin'
-            # TODO (ktsakalozos): make gobblin work direcotry configurable
-            env['GOBBLIN_WORK_DIR'] = '/gobblin/work'
+            env['GOBBLIN_WORK_DIR'] = self.dist_config.path('outputdir')
             hadoop_conf = env['HADOOP_CONF_DIR'] + '/core-site.xml'
         
         with utils.xmlpropmap_edit_in_place(hadoop_conf) as props:
             hdfs_endpoint = props['fs.defaultFS']
 
-        gobblin_config = ''.join((self.dist_config.path('gobblin'), '/conf', '/gobblin-mapreduce.properties'))
+        gobblin_config_template = ''.join((self.dist_config.path('gobblin'), '/conf/gobblin-mapreduce.properties.template'))
+        gobblin_config = ''.join((self.dist_config.path('gobblin'), '/conf/gobblin-mapreduce.properties'))
+        copy(gobblin_config_template, gobblin_config)
         
-        # TODO(ktsakalozos): use a regex or something similar.
         utils.re_edit_in_place(gobblin_config, {
                 r'fs.uri=hdfs://localhost:8020': 'fs.uri=%s' % hdfs_endpoint,                
                 })
 
-        self.__repair_gobblin_exec()
-
-    def __repair_gobblin_exec(self):
-        # 1. Ubuntu uses dash and not bash for sh https://wiki.ubuntu.com/DashAsBinSh
-        # 2. Gobblin 0.5.0 comes with guava 15.0 not 18.0
-        gobblin_exec = ''.join((self.dist_config.path('gobblin'), '/bin/gobblin-mapreduce.sh'))
-        utils.re_edit_in_place(gobblin_exec, {
-                r'#!/bin/sh': '#!/bin/bash',
-                r'guava-18.0.jar': 'guava-15.0.jar',
-                })
-        
 
