@@ -49,7 +49,7 @@ def configure_gobblin(*args):
 
 @when('gobblin.started')
 @when_not('hadoop.ready')
-def stop_hive():
+def stop_gobblin():
     remove_state('gobblin.started')
     hookenv.status_set('blocked', 'Waiting for Haddop connection')
 
