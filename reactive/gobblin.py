@@ -1,6 +1,9 @@
+import jujuresources
 from charms.reactive import when, when_not
 from charms.reactive import set_state, remove_state, is_state
 from charmhelpers.core import hookenv
+from subprocess import check_call
+from charmhelpers.fetch import apt_install
 
 def dist_config():
     from jujubigdata.utils import DistConfig  # no available until after bootstrap
@@ -10,6 +13,21 @@ def dist_config():
         dist_config.value = DistConfig(filename='dist.yaml', required_keys=gobblin_reqs)
     return dist_config.value
 
+
+@when_not('bootstrapped')
+def bootstrap():
+    hookenv.status_set('maintenance', 'Installing base resources')
+    apt_install(['python-pip', 'git'])  # git used for testing unreleased version of libs
+    check_call(['pip', 'install', '-U', 'pip'])  # 1.5.1 (trusty) pip fails on --download with git repos
+    mirror_url = hookenv.config('resources_mirror')
+    if not jujuresources.fetch(mirror_url=mirror_url):
+        missing = jujuresources.invalid()
+        hookenv.status_set('blocked', 'Unable to fetch required resource%s: %s' % (
+            's' if len(missing) > 1 else '',
+            ', '.join(missing),
+        ))
+        return
+    set_state('bootstrapped')
 
 @when('bootstrapped')
 @when_not('gobblin.installed')
