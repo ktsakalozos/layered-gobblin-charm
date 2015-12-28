@@ -1,6 +1,6 @@
 name: gobblin
 summary: Data ingestion framework built on top of Hadoop
-maintainer: Konstantinos Tsakalozos <konstantinos.tsakalozos@canonical.com>
+maintainer: "Big Data Team <bigdata@lists.ubuntu.com>"
 description: |
   Gobblin is a universal data ingestion framework for extracting,
   transforming, and loading large volume of data from a variety of data
@@ -8,7 +8,6 @@ description: |
 
   Learn more at http://https://github.com/linkedin/gobblin/wiki
 tags: ["bigdata", "hadoop"]
-provides:
-  hadoop:
-    interface: hadoop-plugin
-    scope: container
+requires:
+  hdfs:
+    interface: hdfs

@@ -6,26 +6,20 @@ e.g., databases, rest APIs, FTP/SFTP servers, filers, etc., onto Hadoop."
 from the [Gobblin wiki](https://github.com/linkedin/gobblin/wiki) 
 
 ## Usage
-This charm leverages our pluggable Hadoop model with the `hadoop-plugin`
-interface. This means that you will need to deploy a base Apache Hadoop cluster
-to run Gobblin. The suggested deployment method is to use the
-[apache-analytics-sql](https://jujucharms.com/apache-analytics-sql/)
-bundle. This will deploy the Apache Hadoop platform with a single Gobblin
-unit that communicates with the cluster by relating to the
-`apache-hadoop-plugin` subordinate charm:
+This charm is uses the hadoob base layer and the hdfs interface to pull its dependencies
+and act as a client to a hadoop namenode:
 
-    juju deploy apache-hadoop-hdfs-master hdfs-master
-    juju deploy apache-hadoop-yarn-master yarn-master
-    juju deploy apache-hadoop-compute-slave compute-slave
-    juju deploy apache-hadoop-plugin plugin
+    juju deploy apache-hadoop-datanode datanode
+    juju deploy apache-hadoop-namenode namenode
+    juju deploy apache-hadoop-nodemanager nodemgr
+    juju deploy apache-hadoop-resourcemanager resourcemgr
+
+    juju add-relation namenode datanode
+    juju add-relation resourcemgr nodemgr
+    juju add-relation resourcemgr namenode
+
     juju deploy gobblin
-
-    juju add-relation yarn-master hdfs-master
-    juju add-relation compute-slave yarn-master
-    juju add-relation compute-slave hdfs-master
-    juju add-relation plugin yarn-master
-    juju add-relation plugin hdfs-master
-    juju add-relation gobblin plugin
+    juju add-relation gobblin namenode
 
 
 ## Testing the deployment
@@ -34,6 +28,7 @@ unit that communicates with the cluster by relating to the
 From the Gobblin unit, start the wikipedia ingestion demo job as the `gobblin` user:
 
     juju ssh gobblin/0
+    cd /tmp
     sudo su gobblin -c "gobblin-mapreduce.sh --conf wikipedia.pull --jars /usr/lib/gobblin/lib/gobblin-example.jar"
 
 The output will be in hdfs under /gobblin/work/job-output/gobblin/example/wikipedia/WikipediaOutput/<Your_Job_Id>
