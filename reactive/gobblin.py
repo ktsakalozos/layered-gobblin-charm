@@ -1,10 +1,7 @@
 from charms.reactive import when, when_not
 from charms.reactive import set_state, remove_state
 from charmhelpers.core import hookenv
-from jujubigdata.handlers import HadoopBase
 from charms.gobblin import Gobblin
-from charms.hadoop import get_hadoop_base
-from jujubigdata.handlers import HDFS
 from jujubigdata.utils import DistConfig
 
 DIST_KEYS = ['hadoop_version', 'groups', 'users', 'dirs']
@@ -19,6 +16,7 @@ def get_dist_config(keys):
 
 
 @when('hadoop.installed')
+
 @when_not('gobblin.installed')
 def install_gobblin():
     gobblin = Gobblin(get_dist_config(DIST_KEYS))
@@ -37,8 +35,6 @@ def missing_hadoop():
 @when('hadoop.installed', 'hdfs.related')
 @when_not('hdfs.spec.mismatch', 'hdfs.ready')
 def waiting_hadoop(hdfs):
-    base_config = get_hadoop_base()
-    hdfs.set_spec(base_config.spec())
     hookenv.status_set('waiting', "Waiting for HDFS to become ready")
 
 
@@ -51,10 +47,6 @@ def spec_mismatch_hadoop(*args):
 @when('gobblin.installed', 'hdfs.ready')
 @when_not('gobblin.started')
 def configure_gobblin(hdfs):
-    hookenv.status_set('maintenance', 'Setting up Hadoop base files')
-    base_config = get_hadoop_base()
-    hadoop = HDFS(base_config)
-    hadoop.configure_hdfs_base(hdfs.ip_addr(), hdfs.port())
     hookenv.status_set('maintenance', 'Setting up Gobblin')
     gobblin = Gobblin(get_dist_config(DIST_KEYS))
     gobblin.setup_gobblin(hdfs.ip_addr(), hdfs.port())
