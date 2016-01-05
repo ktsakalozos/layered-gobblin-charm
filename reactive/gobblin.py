@@ -2,21 +2,13 @@ from charms.reactive import when, when_not
 from charms.reactive import set_state, remove_state
 from charmhelpers.core import hookenv
 from charms.gobblin import Gobblin
-from jujubigdata.utils import DistConfig
+from charms.hadoop import get_dist_config
+
 
 DIST_KEYS = ['hadoop_version', 'groups', 'users', 'dirs']
 
-def get_dist_config(keys):
-    '''
-    Read the dist.yaml. Soon this method will be moved to hadoop base layer.
-    '''
-    if not getattr(get_dist_config, 'value', None):
-        get_dist_config.value = DistConfig(filename='dist.yaml', required_keys=keys)
-    return get_dist_config.value
-
 
 @when('hadoop.installed')
-
 @when_not('gobblin.installed')
 def install_gobblin():
     gobblin = Gobblin(get_dist_config(DIST_KEYS))
@@ -34,17 +26,11 @@ def missing_hadoop():
 
 @when('hadoop.installed', 'hdfs.related')
 @when_not('hdfs.spec.mismatch', 'hdfs.ready')
-def waiting_hadoop(hdfs):
+def waiting_hadoop(hdfs):  # pylint: disable=unused-argument
     hookenv.status_set('waiting', "Waiting for HDFS to become ready")
 
 
-@when('hadoop.installed', 'hdfs.related', 'hdfs.spec.mismatch')
-@when_not('hdfs.ready')
-def spec_mismatch_hadoop(*args):
-    hookenv.status_set('blocked', "Hadoop and charm specifications mismatch")
-
-
-@when('gobblin.installed', 'hdfs.ready')
+@when('gobblin.installed', 'hdfs.ready', 'hadoop.hdfs.configured')
 @when_not('gobblin.started')
 def configure_gobblin(hdfs):
     hookenv.status_set('maintenance', 'Setting up Gobblin')
@@ -58,4 +44,4 @@ def configure_gobblin(hdfs):
 @when_not('hdfs.ready')
 def stop_gobblin():
     remove_state('gobblin.started')
-    hookenv.status_set('blocked', 'Waiting for HDFS to be reconnection')
+    hookenv.status_set('blocked', 'Waiting for HDFS to be reconnected')
