@@ -6,8 +6,8 @@ e.g., databases, rest APIs, FTP/SFTP servers, filers, etc., onto Hadoop."
 from the [Gobblin wiki](https://github.com/linkedin/gobblin/wiki) 
 
 ## Usage
-This charm is uses the hadoob base layer and the hdfs interface to pull its dependencies
-and act as a client to a hadoop namenode:
+This charm is uses the Hadoob base layer and the HDFS interface to pull its dependencies
+and act as a client to a Hadoop namenode. Here is how to deploy the Hadoop infrastructure:
 
     juju deploy apache-hadoop-datanode datanode
     juju deploy apache-hadoop-namenode namenode
@@ -18,6 +18,9 @@ and act as a client to a hadoop namenode:
     juju add-relation resourcemgr nodemgr
     juju add-relation resourcemgr namenode
 
+
+Deploy the Gobblin charm and relate it to tha neme node:
+ 
     juju deploy gobblin
     juju add-relation gobblin namenode
 
