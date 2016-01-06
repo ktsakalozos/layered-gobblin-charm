@@ -7,7 +7,7 @@ from shutil import copy
 
 class Gobblin(object):
     """
-    This class processes manages the Gobblin deployment steps.
+    This class manages the Gobblin deployment steps.
     
     :param DistConfig dist_config: The configuration container object needed.
     """
