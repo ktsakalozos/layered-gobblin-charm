@@ -1,8 +1,7 @@
 options:
   output_dir: /home/ubuntu/resources
 optional_resources:
-  gobblin-x86_64:
+  gobblin-hadoop_2.7.1-x86_64:
     url: https://s3.amazonaws.com/jujubigdata/linkedin/x86_64/gobblin-dist-0.5.0_hadoop-2.7.1-aa91339.tar.gz
     hash: aa9133984ca1c1409e9227fa0f7f6cd7ea5640ba61f5dbb5813ee4f9a33f0511
     hash_type: sha256
-    

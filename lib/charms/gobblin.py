@@ -8,16 +8,15 @@ from shutil import copy
 class Gobblin(object):
     """
     This class manages the Gobblin deployment steps.
-    
+
     :param DistConfig dist_config: The configuration container object needed.
     """
-    def __init__(self, dist_config):
+    def __init__(self, hadoop_version, dist_config):
         self.dist_config = dist_config
         self.cpu_arch = utils.cpu_arch()
 
-        # TODO(kjackal): look up the Hadoop version and pull the right one
         self.resources = {
-            'gobblin': 'gobblin-%s' % self.cpu_arch,
+            'gobblin': 'gobblin-hadoop_%s-%s' % (hadoop_version, self.cpu_arch),
         }
         self.verify_resources = utils.verify_resources(*self.resources.values())
 
@@ -27,7 +26,7 @@ class Gobblin(object):
     def install(self, force=False):
         '''
         Create the users and directories. This method is to be called only once.
-        
+
         :param bool force: Force the execution of the installation even if this is not the first installation attempt.
         '''
         if not force and self.is_installed():
@@ -41,14 +40,14 @@ class Gobblin(object):
         unitdata.kv().set('gobblin.installed', True)
         unitdata.kv().flush(True)
 
-    def setup_gobblin(self, ip, port):
+    def setup_gobblin(self, host, port):
         '''
         Configure Gobblin. Each time something changes (eg) a new Haddop endpoint is present this method must be called.
-        
+
         :param str ip: IP of the HDFS endpoint.
         :param str port: Port of the HDFS endpoint.
         '''
-        
+
         # Setup the environment
         gobblin_bin = self.dist_config.path('gobblin') / 'bin'
         with utils.environment_edit_in_place('/etc/environment') as env:
@@ -56,14 +55,15 @@ class Gobblin(object):
                 env['PATH'] = ':'.join([env['PATH'], gobblin_bin])
             env['HADOOP_BIN_DIR'] = env['HADOOP_HOME'] + '/bin'
             env['GOBBLIN_WORK_DIR'] = self.dist_config.path('outputdir')
-        
-        hdfs_endpoint = ''.join([ip, ':', port])
+
+        hdfs_endpoint = ''.join([host, ':', port])
 
         # Setup gobblin configuration
-        gobblin_config_template = ''.join((self.dist_config.path('gobblin'), '/conf/gobblin-mapreduce.properties.template'))
-        gobblin_config = ''.join((self.dist_config.path('gobblin'), '/conf/gobblin-mapreduce.properties'))
+        conf_dir = self.dist_config.path('gobblin') / 'conf'
+        gobblin_config_template = conf_dir / 'gobblin-mapreduce.properties.template'
+        gobblin_config = conf_dir / 'gobblin-mapreduce.properties'
         copy(gobblin_config_template, gobblin_config)
-        
+
         utils.re_edit_in_place(gobblin_config, {
-                r'fs.uri=hdfs://localhost:8020': 'fs.uri=hdfs://%s' % hdfs_endpoint,
-                })
+            r'fs.uri=hdfs://localhost:8020': 'fs.uri=hdfs://%s' % hdfs_endpoint,
+        })
