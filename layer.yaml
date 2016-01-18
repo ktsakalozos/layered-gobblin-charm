@@ -1,1 +1,13 @@
-includes: ['layer:hadoop-base', 'interface:hdfs']
+includes: ['layer:hadoop-client']
+options:
+  hadoop-client:
+    users:
+      gobblin:
+        groups: ['hadoop']
+    dirs:
+      gobblin:
+        path: '/usr/lib/gobblin'
+        owner: 'gobblin'
+        group: 'hadoop'
+      outputdir:
+        path: '/gobblin/work'

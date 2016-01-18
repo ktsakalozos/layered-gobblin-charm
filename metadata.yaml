@@ -8,6 +8,3 @@ description: |
 
   Learn more at http://https://github.com/linkedin/gobblin/wiki
 tags: ["bigdata", "hadoop"]
-requires:
-  hdfs:
-    interface: hdfs
