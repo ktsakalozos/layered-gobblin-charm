@@ -13,16 +13,19 @@ and act as a client to a Hadoop namenode. Here is how to deploy the Hadoop infra
     juju deploy apache-hadoop-namenode namenode
     juju deploy apache-hadoop-nodemanager nodemgr
     juju deploy apache-hadoop-resourcemanager resourcemgr
+    juju deploy apache-hadoop-plugin plugin
 
     juju add-relation namenode datanode
     juju add-relation resourcemgr nodemgr
     juju add-relation resourcemgr namenode
+    juju add-relation plugin resourcemgr
+    juju add-relation plugin namenode
 
 
 Deploy the Gobblin charm and relate it to tha neme node:
  
     juju deploy gobblin
-    juju add-relation gobblin namenode
+    juju add-relation gobblin plugin
 
 
 ## Testing the deployment
