@@ -54,7 +54,7 @@ class Gobblin(object):
             if gobblin_bin not in env['PATH']:
                 env['PATH'] = ':'.join([env['PATH'], gobblin_bin])
             env['HADOOP_BIN_DIR'] = env['HADOOP_HOME'] + '/bin'
-            env['GOBBLIN_WORK_DIR'] = self.dist_config.path('outputdir')
+            env['GOBBLIN_WORK_DIR'] = "/user/gobblin/work"
 
         hdfs_endpoint = ''.join([host, ':', port])
 

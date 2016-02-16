@@ -37,12 +37,12 @@ From the Gobblin unit, start the wikipedia ingestion demo job as the `gobblin` u
     cd /tmp
     sudo su gobblin -c "gobblin-mapreduce.sh --conf wikipedia.pull --jars /usr/lib/gobblin/lib/gobblin-example.jar"
 
-The output will be in hdfs under /gobblin/work/job-output/gobblin/example/wikipedia/WikipediaOutput/<Your_Job_Id>
+The output will be in hdfs under /user/gobblin/work/job-output/gobblin/example/wikipedia/WikipediaOutput/<Your_Job_Id> . You can set the output directory through the ``--workdir`` flag. 
 
 List and get the job output file in avro format.
 
-    hdfs dfs -ls /gobblin/work/job-output/gobblin/example/wikipedia/WikipediaOutput/<Your_Job_Id>
-    hdfs dfs -get /gobblin/work/job-output/gobblin/example/wikipedia/WikipediaOutput/<Your_Job_Id>/<Output.avro>
+    hdfs dfs -ls /user/gobblin/work/job-output/gobblin/example/wikipedia/WikipediaOutput/<Your_Job_Id>
+    hdfs dfs -get /user/gobblin/work/job-output/gobblin/example/wikipedia/WikipediaOutput/<Your_Job_Id>/<Output.avro>
 
 Transform to JSON.
 
