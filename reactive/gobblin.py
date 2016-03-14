@@ -2,8 +2,8 @@
 from charms.reactive import when, when_not
 from charms.reactive import set_state, remove_state
 from charmhelpers.core import hookenv
-from charms.gobblin import Gobblin
-from charms.hadoop import get_dist_config
+from charms.layer.gobblin import Gobblin
+from charms.layer.hadoop_client import get_dist_config
 
 
 @when('hadoop.installed')
