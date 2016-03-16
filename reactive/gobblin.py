@@ -6,7 +6,12 @@ from charms.layer.gobblin import Gobblin
 from charms.layer.hadoop_client import get_dist_config
 
 
-@when('hadoop.installed')
+@when_not('hadoop.ready')
+def report_blocked():
+    hookenv.status_set('blocked', 'Waiting for relation to Hadoop Plugin')
+
+
+@when('hadoop.ready')
 @when_not('gobblin.installed')
 def install_gobblin(hadoop):
     gobblin = Gobblin(hadoop.version(), get_dist_config())
@@ -16,7 +21,7 @@ def install_gobblin(hadoop):
         set_state('gobblin.installed')
 
 
-@when('gobblin.installed', 'hadoop.hdfs.ready')
+@when('gobblin.installed', 'hadoop.ready')
 @when_not('gobblin.started')
 def configure_gobblin(hadoop):
     hookenv.status_set('maintenance', 'Setting up Gobblin')
@@ -27,17 +32,6 @@ def configure_gobblin(hadoop):
 
 
 @when('gobblin.started')
-@when_not('hadoop.hdfs.ready')
+@when_not('hadoop.ready')
 def stop_gobblin():
     remove_state('gobblin.started')
-
-
-@when_not('hadoop.related')
-def report_blocked():
-    hookenv.status_set('blocked', 'Waiting for relation to Hadoop Plugin')
-
-
-@when('hadoop.related')
-@when_not('hadoop.hdfs.ready')
-def report_waiting(hadoop):
-    hookenv.status_set('waiting', 'Waiting for HDFS')
