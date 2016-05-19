@@ -62,7 +62,10 @@ class Gobblin(object):
         conf_dir = self.dist_config.path('gobblin') / 'conf'
         gobblin_config_template = conf_dir / 'gobblin-mapreduce.properties.template'
         gobblin_config = conf_dir / 'gobblin-mapreduce.properties'
-        copy(gobblin_config_template, gobblin_config)
+        try:
+            copy(gobblin_config_template, gobblin_config)
+        except FileNotFoundError:
+            pass
 
         utils.re_edit_in_place(gobblin_config, {
             r'fs.uri=hdfs://localhost:8020': 'fs.uri=hdfs://%s' % hdfs_endpoint,
