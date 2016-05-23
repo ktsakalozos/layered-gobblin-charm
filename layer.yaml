@@ -10,3 +10,4 @@ options:
         path: '/usr/lib/gobblin'
         owner: 'gobblin'
         group: 'hadoop'
+    silent: True

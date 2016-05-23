@@ -13,6 +13,7 @@ class Gobblin(object):
     """
     def __init__(self, hadoop_version, dist_config):
         self.dist_config = dist_config
+        self.hadoop_version = hadoop_version
         self.cpu_arch = utils.cpu_arch()
 
         self.resources = {
@@ -62,8 +63,16 @@ class Gobblin(object):
         conf_dir = self.dist_config.path('gobblin') / 'conf'
         gobblin_config_template = conf_dir / 'gobblin-mapreduce.properties.template'
         gobblin_config = conf_dir / 'gobblin-mapreduce.properties'
-        copy(gobblin_config_template, gobblin_config)
+        try:
+            copy(gobblin_config_template, gobblin_config)
+        except FileNotFoundError:
+            pass
 
         utils.re_edit_in_place(gobblin_config, {
             r'fs.uri=hdfs://localhost:8020': 'fs.uri=hdfs://%s' % hdfs_endpoint,
         })
+
+        if '2.7.2' in self.hadoop_version:
+            utils.re_edit_in_place(gobblin_config, {
+                r'task.data.root.dir=*': 'task.data.root.dir=${env:GOBBLIN_WORK_DIR}/task'
+            }, append_non_matches=True)
